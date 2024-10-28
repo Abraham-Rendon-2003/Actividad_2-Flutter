@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rflutter_alert/rflutter_alert.dart'; // Importar rflutter_alert
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,6 +10,26 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  // Método para mostrar alertas con rflutter_alert
+  void _showAlert(String title, String message, AlertType type) {
+    Alert(
+      context: context,
+      type: type,
+      title: title,
+      desc: message,
+      buttons: [
+        DialogButton(
+          child: Text(
+            "OK",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () => Navigator.pop(context),
+          width: 120,
+        )
+      ],
+    ).show();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,43 +43,61 @@ class _LoginScreenState extends State<LoginScreen> {
             Image.asset('assets/login_image.jpg'),
             SizedBox(height: 20),
             TextField(
-              controller: emailController, // Asigna el controlador
+              controller: emailController,
               decoration: InputDecoration(labelText: 'Correo Electrónico'),
               keyboardType: TextInputType.emailAddress,
             ),
             TextField(
-              controller: passwordController, // Asigna el controlador
+              controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Contraseña'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Lógica de inicio de sesión
+              onPressed: () async {
+                String email = emailController.text;
+                String password = passwordController.text;
+
+                if (email.isEmpty || password.isEmpty) {
+                  _showAlert('Error', 'Por favor completa todos los campos', AlertType.error);
+                  return;
+                }
+
+                try {
+                  UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+
+                  if (userCredential.user != null) {
+                    print('Inicio de sesión exitoso: ${userCredential.user!.email}');
+                    _showAlert('Éxito', 'Inicio de sesión exitoso', AlertType.success);
+
+                    Navigator.pushNamed(context, '/add_user');
+                  } else {
+                    print('No se pudo iniciar sesión, el usuario es nulo.');
+                    _showAlert('Error', 'Error al iniciar sesión', AlertType.error);
+                  }
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'user-not-found') {
+                    print('No se encontró un usuario con ese correo.');
+                    _showAlert('Error', 'No se encontró un usuario con ese correo.', AlertType.error);
+                  } else if (e.code == 'wrong-password') {
+                    print('Contraseña incorrecta.');
+                    _showAlert('Error', 'Contraseña incorrecta.', AlertType.error);
+                  } else {
+                    print('OOOOOps: ${e.message}');
+                    _showAlert('Error', 'Ooooooooops: ${e.message}', AlertType.error);
+                  }
+                } catch (e) {
+                  print('Error desconocido: $e');
+                  _showAlert('Error', 'Ha ocurrido un error desconocido.', AlertType.error);
+                }
               },
               child: Text('Iniciar Sesión'),
             ),
             TextButton(
-              onPressed: () async {
-                String emailAddress = emailController.text;
-                String password = passwordController.text;
-
-                try {
-                  final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: emailAddress,
-                    password: password,
-                  );
-                  print('Usuario creado: ${credential.user!.email}');
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'weak-password') {
-                    print('La contraseña es muy débil.');
-                  } else if (e.code == 'email-already-in-use') {
-                    print('La cuenta ya existe con ese correo.');
-                  }
-                } catch (e) {
-                  print(e);
-                }
-
+              onPressed: () {
                 Navigator.pushNamed(context, '/forgot_password');
               },
               child: Text('¿Olvidaste tu contraseña?'),
@@ -71,7 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // Limpia los controladores cuando la pantalla se destruya
     emailController.dispose();
     passwordController.dispose();
     super.dispose();

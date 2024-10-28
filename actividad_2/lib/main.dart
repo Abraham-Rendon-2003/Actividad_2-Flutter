@@ -3,16 +3,16 @@ import 'screens/login_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/verify_code_screen.dart';
 import 'screens/reset_password_screen.dart';
+import 'screens/add_user_screen.dart'; 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
-runApp(LoginApp());
+  );
+  runApp(LoginApp());
 }
 
 class LoginApp extends StatelessWidget {
@@ -29,6 +29,7 @@ class LoginApp extends StatelessWidget {
         '/forgot_password': (context) => ForgotPasswordScreen(),
         '/verify_code': (context) => VerifyCodeScreen(),
         '/reset_password': (context) => ResetPasswordScreen(),
+        '/add_user': (context) => AddUserScreen(), // Nueva ruta para agregar usuarios
       },
     );
   }
