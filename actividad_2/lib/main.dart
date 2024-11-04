@@ -1,11 +1,16 @@
+import 'package:actividad_2/screens/restaurant_details.dart';
+import 'package:actividad_2/screens/restaurant_list.dart';
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/verify_code_screen.dart';
 import 'screens/reset_password_screen.dart';
-import 'screens/add_user_screen.dart'; 
+//import 'screens/add_user_screen.dart'; 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/map_sample.dart'; 
+import 'screens/restaurant_list.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +34,8 @@ class LoginApp extends StatelessWidget {
         '/forgot_password': (context) => ForgotPasswordScreen(),
         '/verify_code': (context) => VerifyCodeScreen(),
         '/reset_password': (context) => ResetPasswordScreen(),
-        '/add_user': (context) => AddUserScreen(), // Nueva ruta para agregar usuarios
+        '/map_sample': (context) => MapSample(),
+        '/restaurant_list': (context) => RestaurantList(),
       },
     );
   }

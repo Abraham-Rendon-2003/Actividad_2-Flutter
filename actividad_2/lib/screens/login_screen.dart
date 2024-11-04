@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     print('Inicio de sesión exitoso: ${userCredential.user!.email}');
                     _showAlert('Éxito', 'Inicio de sesión exitoso', AlertType.success);
 
-                    Navigator.pushNamed(context, '/add_user');
+                    Navigator.pushNamed(context, '/restaurant_list');
                   } else {
                     print('No se pudo iniciar sesión, el usuario es nulo.');
                     _showAlert('Error', 'Error al iniciar sesión', AlertType.error);
